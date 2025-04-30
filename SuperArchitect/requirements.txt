@@ -1,0 +1,8 @@
+requests
+anthropic
+openai
+google-generativeai
+aiohttp
+asyncio
+python-dotenv
+PyYAML

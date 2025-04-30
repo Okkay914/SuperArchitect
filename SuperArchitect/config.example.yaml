@@ -1,0 +1,31 @@
+# API Keys for different services
+api_keys:
+  openai: YOUR_OPENAI_API_KEY_HERE
+  claude: YOUR_CLAUDE_API_KEY_HERE
+  gemini: YOUR_GEMINI_API_KEY_HERE
+
+# Model selection for different roles within the SuperArchitect workflow
+models:
+  # decomposition_model: Responsible for breaking down the initial user query
+  # into logical sub-steps or planning phases.
+  decomposition_model: 'claude-3-opus-20240229' # Example: 'claude-3-opus-20240229', 'gemini-1.5-pro-latest'
+
+  # consultation_models: A list of one or more models that provide initial
+  # architectural suggestions or solutions for each sub-step defined by the
+  # decomposition model.
+  consultation_models:
+    - 'gemini-1.5-pro-latest' # Example: 'gemini-1.5-pro-latest'
+    # - 'claude-3-opus-20240229' # Example: Add more models if needed
+
+  # analyzer_model: Evaluates the responses from the consultation models for a
+  # given sub-step, summarizes findings, identifies consensus/disagreement,
+  # and segments the recommendations into standard architectural sections.
+  analyzer_model: 'claude-3-opus-20240229' # Example: 'claude-3-opus-20240229', 'gemini-1.5-pro-latest'
+
+  # final_architect_model: Synthesizes the analyzed results from all sub-steps
+  # into a single, coherent, final architectural plan or guide.
+  final_architect_model: 'claude-3-opus-20240229' # Example: 'claude-3-opus-20240229', 'gemini-1.5-pro-latest'
+
+  # summarizing_model: Used for generating concise summaries, potentially of
+  # intermediate steps or the final plan.
+  summarizing_model: 'gemini-1.5-pro-latest' # Example: 'gemini-1.5-pro-latest', 'claude-3-opus-20240229'
