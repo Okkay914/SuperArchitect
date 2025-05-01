@@ -1,0 +1,35 @@
+# Configuration files
+config.yaml
+
+# Virtual environment
+venv/
+env/
+*.venv
+
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE/Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+# Runtime artifacts
+logs/
+SuperArchitect/
+
+# Empty directories (if needed)
+config/
+data/
