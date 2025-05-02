@@ -82,9 +82,9 @@ SuperArchitect/
 
 ## Installation
 
-1.  **Clone the Repository (if applicable):**
+1.  **Clone the Repository:**
     ```bash
-    git clone <repository-url>
+    git clone (https://github.com/Okkay914/SuperArchitect)
     cd SuperArchitect
     ```
 2.  **Create a Virtual Environment (Recommended):**
