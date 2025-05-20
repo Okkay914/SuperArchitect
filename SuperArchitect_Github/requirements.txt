@@ -1,0 +1,12 @@
+requests
+anthropic
+openai
+google-generativeai
+aiohttp
+asyncio
+python-dotenv
+PyYAML
+faster-whisper
+browsergym
+click
+Pillow
