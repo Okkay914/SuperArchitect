@@ -1,154 +1,99 @@
-# SuperArchitect
+SuperArchitect
+Overview
+SuperArchitect is a command-line tool designed to assist in architectural planning. It aims to take a high-level user request, process it through a structured workflow involving multiple AI models, and generate a detailed architectural plan in Markdown format.
 
-## Overview
+Features
+Configuration Management: Loads API keys and model preferences from config.yaml.
+Request Decomposition: Breaks down the initial user query into logical substeps with questions using a decomposition_model.
+Per-Question Consultation: Iterates through configured consultation_models for each question, using the first successful response to gather insights.
+Instructional Guide Generation: An AnalyzerEngine (utilizing an analyzer_model) processes consultation responses to generate a detailed JSON instructional guide for each substep.
+Markdown Document Assembly: A SynthesisEngine assembles the final architectural plan. This includes project headers, formatted instructional guides for each substep, and overall conclusions. An LLM (via synthesis_handler) can optionally generate the introduction and conclusion.
+Logging: Provides comprehensive logging of the process in both JSON format and to the console.
+Workflow
+The SuperArchitect workflow is orchestrated by main.py and proceeds through the following phases:
 
-SuperArchitect is a Python-based command-line tool designed to assist with architectural planning by leveraging multiple AI models. It takes a high-level architectural request, processes it through a structured workflow involving decomposition, multi-model consultation, analysis, and synthesis, ultimately generating a proposed architectural plan or step-by-step guide.
+Decomposition:
 
-## Features
+The initial user's architectural request is processed by the decomposition_model.
+This model breaks down the high-level query into a series of logical substeps, each typically formulated as a question to guide further investigation.
+Consultation (Per Question):
 
-*   **Multi-AI Consultation:** Utilizes various AI models (configurable: OpenAI, Anthropic Claude, Google Gemini) for diverse perspectives.
-*   **Structured Workflow:** Follows a defined process:
-    1.  Decomposition: Breaks down the request.
-    2.  Consultation: Gathers suggestions from multiple models.
-    3.  Analysis: Evaluates and summarizes suggestions.
-    4.  Segmentation: Organizes suggestions into architectural sections.
-    5.  Comparison: Analyzes relationships across steps.
-    6.  Synthesis: Integrates the best ideas into a final plan.
-*   **Configurable:** Allows users to specify API keys and select specific AI models for different workflow stages via `config.yaml`.
-*   **Command-Line Interface:** Easy to run from the terminal.
-*   **Logging:** Saves execution details to the `SuperArchitect/logs/` directory (if created).
+For each question/substep generated during decomposition, the system iterates through the list of consultation_models defined in config.yaml.
+It uses the first successful response obtained from these models for further processing.
+Analysis (Per Substep):
 
-## Workflow Details
+The AnalyzerEngine, configured with an analyzer_model, takes the "best answer" (the successful response from the consultation phase) for each substep.
+It processes this answer to generate a detailed instructional guide in JSON format, structuring the information for that specific substep.
+Synthesis:
 
-SuperArchitect employs a multi-step workflow orchestrated by `main.py`:
+The SynthesisEngine takes all the generated instructional guides (one for each substep).
+It assembles these into a final, coherent architectural plan in Markdown format.
+This includes an overall project title, introduction (optionally LLM-generated), the formatted instructional guides for each substep, and a conclusion (optionally LLM-generated).
+Model Roles in config.yaml
+The behavior and capabilities of SuperArchitect are significantly influenced by the AI models configured in config.yaml under the model_roles section:
 
-1.  **Initial Planning Decomposition:** The initial user request is broken down into smaller, manageable planning steps using the `decomposition_model` defined in `config.yaml`.
-    *   *Module:* `main.py` (initial call)
-    *   *Status:* **Placeholder logic.** Needs implementation for effective decomposition.
+decomposition_model: This model is responsible for the initial phase of breaking down the user's high-level request into smaller, manageable substeps or questions.
+consultation_models: A list of language models. For each substep, SuperArchitect will attempt to get a response from these models sequentially, using the first successful answer. These models provide the core information and suggestions for each substep.
+analyzer_model: This model is used by the AnalyzerEngine. Its role is to take the raw answer from a consultation model for a substep and transform it into a structured JSON instructional guide.
+synthesis_handler (referred to as final_architect_model in some configurations): This model (or handler configuration) is used by the SynthesisEngine, primarily for generating the introductory and concluding sections of the final Markdown document, providing a narrative frame around the detailed substep guides.
+summarizing_model: While this role may be defined in some older config.yaml versions or documentation, it is not actively used in the current primary workflow for generating the final architectural plan.
+Current Implementation and Future Vision
+The current version of SuperArchitect implements the core pipeline described above: decomposing a request, gathering information per substep, structuring that information, and synthesizing a final document.
 
-2.  **Multi-Model Consultation:** Each planning step prompt is sent concurrently to the `consultation_models` listed in `config.yaml` to gather diverse perspectives.
-    *   *Module:* `core/query_manager.py`
+Previous versions of this README described a more ambitious workflow involving features like multi-model consensus for each question, advanced architectural segmentation beyond instructional guides, and comparative analysis across substeps. These advanced features are not part of the current active implementation but may represent areas for future development. The tool currently focuses on a streamlined process of generating instructional guides based on single successful model consultations per substep.
 
-3.  **Analyzer AI Evaluation:** The responses from the consultation models for each step are evaluated by the `analyzer_model`. It aims to identify consensus points and summarize key recommendations.
-    *   *Module:* `core/analysis/engine.py`
-    *   *Status:* **Placeholder logic.** Needs implementation for robust consensus finding and summarization.
+Deep Research Module
+SuperArchitect now includes a deep research module that can perform automated research using the "Auto-Deep-Research-main" tool. This module can be configured via the research section in config.yaml. More details can be found in the RESEARCH.md file.
 
-4.  **Architecture Segmentation:** The analyzer further processes the evaluated recommendations, segmenting them into standard architectural sections (e.g., components, data flow, technology stack).
-    *   *Module:* `core/analysis/engine.py`
-    *   *Status:* **Placeholder logic.** Needs implementation for accurate segmentation.
+Code Structure
+The main components of the workflow are implemented in the following modules:
 
-5.  **Comparative Analysis:** The segmented results are compared across the different planning steps to identify relationships, dependencies, and potential conflicts.
-    *   *Module:* `core/synthesis/engine.py`
-    *   *Status:* **Placeholder logic.** Needs implementation for meaningful comparison.
+main.py: The main entry point for the CLI application, orchestrates the workflow.
+core/query_manager.py: Manages sending prompts to and receiving responses from the configured AI models, particularly for the consultation phase.
+core/analysis/engine.py: Contains the AnalyzerEngine logic for generating instructional guides from consultation responses.
+core/synthesis/engine.py: Contains the SynthesisEngine logic for assembling the final Markdown document.
+core/models/: Contains specific handlers for different model providers (OpenAI, Claude, Gemini).
+config.yaml: Central configuration file for API keys, model selections, and model roles.
+Setup
+Install Dependencies: Navigate to the SuperArchitect directory in your terminal and run:
 
-6.  **Synthesis and Integration:** Based on the comparative analysis, the best components and recommendations are selected and integrated by the `final_architect_model` into a cohesive final architectural plan or guide. A `summarizing_model` may also be used.
-    *   *Module:* `core/synthesis/engine.py`
-    *   *Status:* **Placeholder logic.** Needs implementation for effective selection and integration.
+pip install -r requirements.txt
+Configure API Keys: Create or edit the config.yaml file in the SuperArchitect directory (you can copy from config.example.yaml). Add your API keys for the desired model providers (OpenAI, Anthropic, Google Gemini) under the api_keys section. Also, configure your desired models under model_provider_models and assign them to roles under model_roles.
 
-## Current State
+Example config.yaml structure:
 
-**Important:** The core logic for several key workflow steps (Decomposition, Analysis, Segmentation, Comparison, Synthesis) is currently implemented using placeholders. These components require further development to achieve full functionality.
+api_keys:
+  openai: YOUR_OPENAI_API_KEY
+  anthropic: YOUR_ANTHROPIC_API_KEY
+  google_gemini: YOUR_GEMINI_API_KEY
 
-## Project Structure
+# Defines which specific models from providers are available
+model_provider_models:
+  openai_model_name: "gpt-4-turbo" # Example, use your preferred model
+  anthropic_model_name: "claude-3-opus-20240229" # Example
+  google_gemini_model_name: "gemini-1.5-pro-latest" # Example
 
-```
-SuperArchitect/
-├── .gitignore
-├── config.example.yaml     # Example configuration file
-├── config.yaml             # User's configuration (create this file)
-├── LICENSE                 # Project license
-├── main.py                 # Main CLI entry point
-├── README.md               # This file
-├── requirements.txt        # Python dependencies
-├── USER_GUIDE.md           # Guide for non-technical users
-└── core/                   # Core application logic
-    ├── __init__.py
-    ├── file_manager.py     # File system utilities
-    ├── query_manager.py    # Handles interaction with AI models
-    ├── analysis/           # Logic for analyzing model responses
-    │   ├── __init__.py
-    │   └── engine.py
-    ├── models/             # Handlers for specific AI model APIs
-    │   ├── __init__.py
-    │   ├── base.py
-    │   ├── claude.py
-    │   ├── curl_parser.py  # Utility for parsing CURL commands (if needed)
-    │   ├── gemini.py
-    │   └── openai.py
-    └── synthesis/          # Logic for synthesizing the final output
-        ├── __init__.py
-        └── engine.py
-```
+model_roles:
+  decomposition_model: "google_gemini_model_name" # Assign a model from above
+  consultation_models:
+    - "anthropic_model_name"
+    - "openai_model_name"
+  analyzer_model: "google_gemini_model_name"
+  synthesis_handler: # Configuration for LLM-based synthesis elements
+    provider: "anthropic" # or "openai", "google_gemini"
+    model_name: "claude-3-sonnet-20240229" # A model suitable for this
+# ... other configurations like logging, research etc.
+Usage
+Run the tool from the command line within the SuperArchitect directory:
 
-## Installation
-
-1.  **Clone the Repository:**
-    ```bash
-    git clone (https://github.com/Okkay914/SuperArchitect)
-    cd SuperArchitect
-    ```
-2.  **Create a Virtual Environment (Recommended):**
-    ```bash
-    python -m venv venv
-    # Activate the environment
-    # Windows:
-    .\venv\Scripts\activate
-    # macOS/Linux:
-    source venv/bin/activate
-    ```
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-## Configuration
-
-1.  **Create `config.yaml`:** Copy the `config.example.yaml` file to `config.yaml` in the `SuperArchitect` directory.
-    ```bash
-    # Windows
-    copy config.example.yaml config.yaml
-    # macOS/Linux
-    cp config.example.yaml config.yaml
-    ```
-2.  **Add API Keys:** Open `config.yaml` and replace the placeholder values (`YOUR_..._API_KEY_HERE`) with your actual API keys for OpenAI, Anthropic (Claude), and Google (Gemini).
-    ```yaml
-    # config.yaml
-    api_keys:
-      openai: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      claude: sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxx
-      gemini: AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    ```
-3.  **Select Models (Optional):** Review the models specified under the `models` section in `config.yaml`. Ensure these model names are correct and accessible with your API keys. You can change them based on your needs and available access.
-    ```yaml
-    # config.yaml (example model selection)
-    models:
-      decomposition_model: 'claude-3-opus-20240229'
-      consultation_models:
-        - 'gemini-1.5-pro-latest'
-        # - 'claude-3-opus-20240229' # Add more if desired
-      analyzer_model: 'claude-3-opus-20240229'
-      final_architect_model: 'claude-3-opus-20240229'
-      summarizing_model: 'gemini-1.5-pro-latest'
-    ```
-
-## Usage
-
-Run the tool from the command line within the `SuperArchitect` directory:
-
-```bash
 python main.py "your architectural planning query here"
-```
+Replace "your architectural planning query here" with the actual high-level request you want the tool to process. The tool will output the generated plan (e.g., to output/generated_architectural_plan_YYYYMMDD_HHMMSS.md) and save execution logs to the logs/ directory.
 
-Replace `"your architectural planning query here"` with the actual high-level request you want the tool to process (e.g., `"Design a scalable microservices architecture for an e-commerce platform"`).
+Configuration (config.yaml)
+The config.yaml file is crucial for controlling SuperArchitect's behavior. Refer to the example above and config.example.yaml for detailed structure. Key sections include:
 
-The tool will output the generated plan to the console and save execution logs (JSON format) to the `SuperArchitect/logs/` directory (this directory might need to be created manually if it doesn't exist).
-
-Refer to `USER_GUIDE.md` for a less technical overview.
-
-## Contributing
-
-Contributions are welcome! Please follow standard fork-and-pull-request workflows. (Further contribution guidelines can be added here).
-
-## License
-
-This project is licensed under the terms of the LICENSE file.
+api_keys: Stores API keys for AI model providers.
+model_provider_models: Lists specific model names available from each provider.
+model_roles: Assigns models (from model_provider_models) to specific roles in the workflow (see "Model Roles" section above for details).
+logging: Configures logging levels and output paths.
+research: (Optional) Configures the deep research module.
