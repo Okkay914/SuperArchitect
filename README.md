@@ -6,7 +6,7 @@ SuperArchitect is a command-line tool designed to generate architectural plans f
 
 ## Features
 
-*   **Configuration Management:** Loads API keys and model preferences from [`config.yaml`](config/config.yaml:0).
+*   **Configuration Management:** Loads API keys and model preferences from [`config/config.yaml`](config/config.yaml:0).
 *   **Modular LLM Interaction:** Supports various LLM providers ([`OpenAI`](core/models/openai.py:14), [`Claude`](core/models/claude.py:16), [`Gemini`](core/models/gemini.py:28)) through a common [`ModelHandler`](core/models/base.py:8) interface.
 *   **Request Decomposition:** Breaks down the initial user query into logical substeps using a configured `decomposition_model`.
 *   **Per-Substep Consultation:** Gathers insights for each substep by querying configured `consultation_models`.
@@ -78,13 +78,13 @@ graph TD
 
 ## Model Roles in `config.yaml`
 
-The behavior and capabilities of SuperArchitect are significantly influenced by the AI models configured in [`config.yaml`](config/config.yaml:0) under the `model_roles` section:
+The behavior and capabilities of SuperArchitect are significantly influenced by the AI models configured in [`config/config.yaml`](config/config.yaml:0) under the `model_roles` section:
 
 *   **`decomposition_model`**: This model is responsible for the initial phase of breaking down the user's high-level request into smaller, manageable substeps or questions.
 *   **`consultation_models`**: A list of language models. For each substep, SuperArchitect will attempt to get a response from these models sequentially, using the first successful answer. These models provide the core information and suggestions for each substep.
 *   **`analyzer_model`**: This model is used by the [`AnalyzerEngine`](core/analysis/engine.py:36). Its role is to take the raw answer from a consultation model for a substep and transform it into a structured, detailed content output (often JSON, then formatted to Markdown).
 *   **`synthesis_handler`**: This model (or handler configuration) is used by the [`SynthesisEngine`](core/synthesis/engine.py:71), primarily for generating the introductory and concluding sections of the final Markdown document, providing a narrative frame around the detailed substep guides.
-*   **`summarizing_model`**: While this role may be defined in some older [`config.yaml`](config.yaml:0) versions or documentation, it is not actively used in the current primary workflow for generating the final architectural plan.
+*   **`summarizing_model`**: While this role may be defined in some older [`config/config.yaml`](config/config.yaml:0) versions or documentation, it is not actively used in the current primary workflow for generating the final architectural plan.
 
 ## Code Structure
 
@@ -125,7 +125,7 @@ Previous versions of this README may have described a more ambitious workflow in
 
 ## Deep Research Module
 
-SuperArchitect includes an optional deep research module that can perform automated research using an external tool (e.g., "Auto-Deep-Research-main"). This module can be configured via the `research` section in [`config.yaml`](config/config.yaml:0). More details might be found in specific documentation if this feature is actively used (e.g., a `RESEARCH.md` file, if present).
+SuperArchitect includes an optional deep research module that can perform automated research using an external tool (e.g., "Auto-Deep-Research-main"). This module can be configured via the `research` section in [`config/config.yaml`](config/config.yaml:0). More details might be found in specific documentation if this feature is actively used (e.g., a `RESEARCH.md` file, if present).
 
 ## Setup
 
@@ -142,10 +142,10 @@ SuperArchitect includes an optional deep research module that can perform automa
     ```
 
 3.  **Configure API Keys:**
-    Create a `config.yaml` file in the `SuperArchitect` directory (you can copy and rename [`config.example.yaml`](config/config.example.yaml:0) to [`config.yaml`](config/config.yaml:0)).
+    Create a `config.yaml` file in the `SuperArchitect` directory (you can copy and rename [`config.example.yaml`](config/config.example.yaml:0) to [`config/config.yaml`](config/config.yaml:0)).
     Add your API keys for the desired model providers (OpenAI, Anthropic, Google Gemini) under the `api_keys` section. Also, configure your desired models under `model_provider_models` and assign them to roles under `model_roles`.
 
-    Example [`config.yaml`](config/config.yaml:0) structure:
+    Example [`config/config.yaml`](config/config.yaml:0) structure:
     ```yaml
     api_keys:
       openai: YOUR_OPENAI_API_KEY
@@ -180,9 +180,9 @@ python main.py "your architectural planning query here"
 
 Replace `"your architectural planning query here"` with the actual high-level request you want the tool to process. The tool will output the generated plan (e.g., to `output/generated_architectural_plan_YYYYMMDD_HHMMSS.md`) and save execution logs to the `logs/` directory.
 
-## Configuration (`config.yaml`)
+## Configuration (`config/config.yaml`)
 
-The [`config.yaml`](config/config.yaml:0) file is crucial for controlling SuperArchitect's behavior. Refer to the example above and [`config.example.yaml`](config/config.example.yaml:0) for detailed structure. Key sections include:
+The [`config/config.yaml`](config/config.yaml:0) file is crucial for controlling SuperArchitect's behavior. Refer to the example above and [`config/config.example.yaml`](config/config.example.yaml:0) for detailed structure. Key sections include:
 
 *   **`api_keys`**: Stores API keys for AI model providers.
 *   **`model_provider_models`**: Lists specific model names available from each provider that can be referenced in `model_roles`.
